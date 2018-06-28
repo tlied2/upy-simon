@@ -1,33 +1,32 @@
 import time
 import random
+from drivers import driver
 
 
 class Button:
 
-    def __init__(self, code, in_address, out_address):
+    def __init__(self, code):
         self.code = code
-        self.in_address = in_address
-        self.out_address = out_address
 
     def turnon(self, seconds=0):
-        # turn button light on using out_address, wait number of seconds
+        driver.lighton(self.code)
         time.sleep(seconds)
 
     def turnoff(self, seconds=0):
-        # turn button light off using out_address, wait number of seconds
+        driver.lightoff(self.code)
         time.sleep(seconds)
 
     def isPressed(self):
-        # check in_address for whether button is currently being pressed
+        driver.getpressed(self.code)
         return
 
 
 class Simon:
 
-    red = Button('r', 0, 0)
-    yellow = Button('y', 0, 0)
-    green = Button('g', 0, 0)
-    blue = Button('b', 0, 0)
+    red = Button('r')
+    yellow = Button('y')
+    green = Button('g')
+    blue = Button('b')
 
     buttons = {'r': red, 'y': yellow, 'g': green, 'b': blue}
 
