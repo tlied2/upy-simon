@@ -1,6 +1,9 @@
+import machine
 import time
 import random
-from drivers import driver
+import drivers
+
+driver = drivers.driver()
 
 
 class Button:
