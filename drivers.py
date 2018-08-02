@@ -36,16 +36,18 @@ class driver:
 
     def lighton(self, code):
         val = self.bus.readfrom_mem(self.BASE_ADDR, self.MCP23008_GPIO, 1)[0] & 0x0F
-        newval = val << 4 & self.buttondict(code)(1)
+        newval = val << 4 & self.buttondict[code][1]
+        print(newval)
         self.bus.writeto(self.BASE_ADDR, bytearray([self.MCP23008_GPIO, newval]))
 
     def lightoff(self, code):
         val = self.bus.readfrom_mem(self.BASE_ADDR, self.MCP23008_GPIO, 1)[0] & 0x0F
-        newval = (val << 4 ^ self.buttondict(code)(1))
+        newval = (val << 4 ^ self.buttondict[code][1])
+        print(newval)
         self.bus.writeto(self.BASE_ADDR, bytearray([self.MCP23008_GPIO, newval]))
 
     def getpressed(self, code):
         val = self.bus.readfrom_mem(self.BASE_ADDR, self.MCP23008_GPIO, 1)[0] & 0x0F
-        if val & self.buttondict(code)(0) == val:
+        if val & self.buttondict[code][0] == val:
             return True
         return False

@@ -1,9 +1,14 @@
 import machine
 import time
-import random
+import urandom
 import drivers
 
 driver = drivers.driver()
+
+
+def pick_item(sequence):
+    div = 0x3fffffff // len(sequence)
+    return sequence[urandom.getrandbits(30) // div]
 
 
 class Button:
@@ -26,34 +31,35 @@ class Button:
 
 class Simon:
 
-    red = Button('r')
-    yellow = Button('y')
-    green = Button('g')
-    blue = Button('b')
+    def __init__(self):
+        self.red = Button('r')
+        self.yellow = Button('y')
+        self.green = Button('g')
+        self.blue = Button('b')
 
-    buttons = {'r': red, 'y': yellow, 'g': green, 'b': blue}
+        self.buttons = {'r': self.red, 'y': self.yellow, 'g': self.green, 'b': self.blue}
 
-    score = 0
-    button_seq = random.choice('rgby')
-    button_cur = button_seq[0]
-    button_place = 0
+        self.score = 0
+        self.button_seq = pick_item('rgby')
+        self.button_cur = self.button_seq[0]
+        self.button_place = 0
 
     def blink(self, button, time_on=1, time_off=0.2):
         button.turnon(time_on)
         button.turnoff(time_off)
 
     def blink_all(self, time_on=1, time_off=0.2):
-        for button in self.buttons.values:
+        for button in self.buttons.values():
             button.turnon(0)
         time.sleep(time_on)
-        for button in self.buttons.values:
+        for button in self.buttons.values():
             button.turnoff(0)
         time.sleep(time_off)
 
     def fail_game(self):
 
         self.score = 0
-        self.button_seq = random.choice('rgby')
+        self.button_seq = pick_item('rgby')
         self.button_cur = self.button_seq[0]
         self.button_place = 0
 
@@ -66,7 +72,7 @@ class Simon:
 
         if self.button_place + 1 == len(self.button_seq):
             # sequence completed, add next color and restart from beginning
-            self.button_seq += random.choice('rgby')
+            self.button_seq += pick_item('rgby')
             self.button_place = 0
             self.score += 1
             self.button_cur = self.button_seq[0]
@@ -77,7 +83,7 @@ class Simon:
 
     def get_button_press(self):
         code = None
-        for button in self.buttons.values:
+        for button in self.buttons.values():
             if button.isPressed():
                 code = button.code
         return code
@@ -107,12 +113,13 @@ class Simon:
             self.blink(self.buttons[color])
 
     def game_start(self):
-        for button in self.buttons.values:
+        for button in self.buttons.values():
             button.turnon(seconds=1)
-        for button in self.buttons.values:
+        for button in self.buttons.values():
             button.turnoff(seconds=0)
         self.game_loop()
 
 
 game = Simon()
+print('game start')
 game.game_start()
