@@ -57,7 +57,7 @@ class Simon(object):
                 gotcolor = self.driver.get_pressed()
 
                 if gotcolor == color:
-                    self.blink(color, 0.5, 0)
+                    self.driver.blink(color, 0.5)
                 else:
                     self.fail_game()
                     failed = True
@@ -65,6 +65,8 @@ class Simon(object):
 
     def do_sequence(self):
         ''' Displays current color sequence '''
+        self.driver.all_off()
+        time.sleep(0.5)
         for color in self.button_seq:
             print("Do sequence, color: %s" % color)
             self.blink(color)
@@ -90,6 +92,8 @@ def main():
         driver.get_pressed()
 
         print('Game Start')
+        game.fail_game()
+        urandom.seed(time.ticks_cpu())
         game.game_loop()
         print("Game finished, starting new game")
 
