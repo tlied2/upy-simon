@@ -1,12 +1,12 @@
 ''' Simon game implementation '''
 
-import utime as time
+import logging
 import urandom
+import utime as time
 import uasyncio as asyncio
 
 from drivers import LEDBTN
 
-import logging
 log = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 #asyncio.set_debug(True)
@@ -20,6 +20,7 @@ class Simon(object):
 
     def __init__(self, driver):
         self.driver = driver
+        self.failed = True
         self.score = 0
         self.button_seq = []
 
@@ -41,7 +42,7 @@ class Simon(object):
         ''' Main game loop '''
         log.info('Game Start')
         while not self.failed:
-            log.info("Playing game, score: %d" % self.score)
+            log.info("Playing game, score: %d", self.score)
             await asyncio.sleep(2)
 
             self.button_seq += self.pick_color()
@@ -65,6 +66,8 @@ class Simon(object):
             self.score += 1
 
     async def main_loop(self):
+        ''' Endless loop to play games '''
+
         while True:
             await self.welcome()
 

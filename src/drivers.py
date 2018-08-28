@@ -1,10 +1,10 @@
 ''' Drivers for Simon game'''
 
+import logging
 from machine import Pin, Signal, I2C
 import uasyncio as asyncio
 from uasyncio.queues import Queue
 
-import logging
 log = logging.getLogger(__name__)
 
 
@@ -71,7 +71,7 @@ class LEDBTN(object):
 
     async def blink(self, color, time_on):
         ''' Blink an LED for a specified time, but return immediately '''
-        log.info("Blinking Value: %s" % hex(self.buttondict[color] << 4))
+        log.info("Blinking Value: %s", hex(self.buttondict[color] << 4))
         self.bus.writeto(
             self.BASE_ADDR,
             bytearray([self.MCP23008_GPIO, self.buttondict[color] << 4]))
@@ -88,22 +88,22 @@ class LEDBTN(object):
 
     def light_on(self, code):
         ''' Turns on a single light '''
-        log.info("Called lighton for %s" % code)
+        log.info("Called lighton for %s", code)
 
         val = self.bus.readfrom_mem(self.BASE_ADDR, self.MCP23008_GPIO, 1)[0] & 0xF0
-        log.debug("Orig Value: %s" % hex(val))
+        log.debug("Orig Value: %s", hex(val))
         newval = val | self.buttondict[code] << 4
-        log.debug("New Value: %s" % hex(newval))
+        log.debug("New Value: %s", hex(newval))
         self.bus.writeto(self.BASE_ADDR, bytearray([self.MCP23008_GPIO, newval]))
 
     def light_off(self, code):
         ''' Turns off a single light '''
-        log.info("Called lightoff for %s" % code)
+        log.info("Called lightoff for %s", code)
 
         val = self.bus.readfrom_mem(self.BASE_ADDR, self.MCP23008_GPIO, 1)[0] & 0xF0
-        log.debug("Orig Value: %s" % hex(val))
+        log.debug("Orig Value: %s", hex(val))
         newval = val ^ self.buttondict[code] << 4
-        log.debug("New Value: %s" % hex(newval))
+        log.debug("New Value: %s", hex(newval))
         self.bus.writeto(self.BASE_ADDR, bytearray([self.MCP23008_GPIO, newval]))
 
     def lookup_key(self, val):
@@ -121,9 +121,9 @@ class LEDBTN(object):
             if self.int.value():
                 log.debug("Button interrupt high")
                 val = self.bus.readfrom_mem(self.BASE_ADDR, self.MCP23008_INTCAP, 1)[0] & 0x0F
-                log.debug("Adding %s to queue" % val)
+                log.debug("Adding %s to queue", val)
                 await self.input.put(self.lookup_key(val))
-                log.debug("Added %s to queue" % val)
+                log.debug("Added %s to queue", val)
                 # Debounce delay
                 await asyncio.sleep(0.1)
                 # Clear bounces
